@@ -598,8 +598,113 @@ def aws_create_group(**args):
 		else:
 			print("Unexpected error occured while creating group... exiting from here", error)
 			return "Group could not be created", error
+		
 
-	
+def add_user_to_group(**args):
+	try:
+		iam_client = boto3.client(args["service"])
+		response = iam_client.add_user_to_group(
+			GroupName = args["group_name"],
+			UserName = args["user_name"]
+		)
+		print(response)
+
+		response1 = iam_client.create_login_profile(
+			UserName = args["user_name"],
+			Password = "Stackinc987",
+			PasswordResetRequired=False
+		)
+		print(response1)
+
+	except ClientError as error:
+		print(error.response)
+
+		#checking if user does not exist
+		if error.response["Error"]["Message"] == "The user with name {} cannot be found.".format(args["user_name"]):
+			print("User does not exists... Would you like to create user?")
+			value1 = input("Enter (y or n): ")
+			if value1 == "y":
+				print("You want to create a new user")
+				new_user = input("Enter User Name: ")
+				response = iam_client.create_user(UserName = new_user)
+				print(response)
+
+				#creating login profile for newly created user
+				response1 = iam_client.create_login_profile(
+					UserName = new_user,
+					Password = "Stackinc987",
+					PasswordResetRequired=False
+				)
+				print(response1)
+
+				try:
+					#group exists but user does not exist and was newly created. Adding user to group
+					iam_client = boto3.client(args["service"])
+					response = iam_client.add_user_to_group(
+						GroupName = args["group_name"],
+						UserName = new_user
+					)
+					print(response)
+
+				except ClientError as error:
+					print(error.response)
+
+					#group and user do not exist. they were both newly created.
+					if error.response["Error"]["Message"] == "The group with name {} cannot be found.".format(args["group_name"]):
+						print("Group name does not exist... Would you like to create a new group?")
+						value2 = input("Enter (y or n): ")
+						if value2 == "y":
+							print("You want to create a new group")
+							new_group = input("Enter Group Name: ")
+							response1 = iam_client.create_group(GroupName = new_group)
+							print(response1)
+
+							#adding newly created user to newly created group
+							iam_client = boto3.client(args["service"])
+							response = iam_client.add_user_to_group(
+								GroupName = new_group,
+								UserName = new_user
+								)
+							print(response)
+
+							#attaching admin policy to newly created group
+							response1 = iam_client.attach_group_policy(
+								GroupName = new_group,
+								PolicyArn = "arn:aws:iam::aws:policy/AdministratorAccess"
+							)
+							print(response1)
+
+			else:
+				print("You choose not to create a new user and user provided does not exist.")
+
+		#case 2: user exists but group does not exist
+		elif error.response["Error"]["Message"] == "The group with name {} cannot be found.".format(args["group_name"]):
+			print("Group name does not exist... Would you like to create a new group?")
+			value2 = input("Enter (y or n): ")
+			if value2 == "y":
+				print("You want to create a new group")
+				new_group = input("Enter Group Name: ")
+				response1 = iam_client.create_group(GroupName = new_group)
+				print(response1)
+
+				iam_client = boto3.client(args["service"])
+				response = iam_client.add_user_to_group(
+					GroupName = new_group,
+					UserName = args["user_name"]
+				)
+				print(response)
+
+				response1 = iam_client.attach_group_policy(
+					GroupName = args["group_name"],
+					PolicyArn = "arn:aws:iam::aws:policy/AdministratorAccess"
+				)
+				print(response1)
+
+		else:
+			print("Unexpected error... exiting from here", error)
+			return "User or Group could not be created", error
+
+
 #Main body
 if __name__ == "__main__":
 	get_server_dictionary()
