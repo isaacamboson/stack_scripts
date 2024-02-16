@@ -3,7 +3,7 @@
 #Module declaration
 import os
 import sys
-import stack_modules_v1_19 as sm
+import stack_modules_v1_20 as sm
 import time
 import datetime
 
@@ -113,6 +113,7 @@ if __name__ == "__main__":
 		print("Please run this script in the format below:")
 		print("python *scriptname* *function* *runner* *backup location* *schema to be backed up*")
 
+
 	elif sys.argv[1] == "backup" and count_args == 3:
 		source = sys.argv[2]
 		dest = sys.argv[3]
@@ -120,10 +121,12 @@ if __name__ == "__main__":
 		#calling the copy function from the stack_modules_v1_3 module
 		sm.copy_fd(source, dest)
 
+
 	elif sys.argv[1] == "backup" and count_args != 3:
 		print("You have provided the wrong number of command line arguments.")
 		print("Please run this script in the format below:")
 		print("python *scriptname* *function* *source directory* *source file* *destination*")
+
 
 	elif sys.argv[1] == "disk_utilization" and count_args == 7:
 		disk = sys.argv[2]
@@ -291,48 +294,146 @@ if __name__ == "__main__":
 		sm.db_connection(OP_ID=sys.argv[2], OP_NAME=sys.argv[3], runner=sys.argv[4], STATUS = sys.argv[5], OP_TYPE=sys.argv[6])
 
 
-	elif sys.argv[1] == "create_aws_user" and count_args == 3:
+	elif sys.argv[1] == "create_aws_user" and count_args == 6:
 		service = sys.argv[2]
 		user = sys.argv[3]
+		runner = sys.argv[4]
+		OP_NAME = sys.argv[5]
+		OP_STATUS = sys.argv[6]
 
-		sm.aws_create_user(service = sys.argv[2], user = sys.argv[3])
+		#declaring the initial operation starttime
+		timestring = datetime.datetime.now()
+		STARTTIME = timestring.strftime("%d-%b-%y %I.%M.%S.%f %p")
+		OP_STARTTIME = STARTTIME.upper()
+		print("Start Time: {}".format(OP_STARTTIME))
+
+		#calling the db_connection function to input start-time, runner, op_name and status into database
+		sm.db_connection(runner = sys.argv[4], OP_NAME = sys.argv[5], OP_STATUS = sys.argv[6], OP_STARTTIME=OP_STARTTIME)
+
+		#calling the AWS create-user function
+		OP_STATUS = sm.aws_create_user(service = sys.argv[2], user = sys.argv[3])
+
+		#checking the condition of the return value from create_aws_user function to determine OP_STATUS and OPENDTIME for DB update
+		if OP_STATUS == "COMPLETED":
+			timestring3 = datetime.datetime.now()
+			ENDTIME3 = timestring3.strftime("%d-%b-%y %I.%M.%S.%f %p")
+			OP_ENDTIME = ENDTIME3.upper()
+			print("End Time: {}".format(OP_ENDTIME))
+
+			#calling the db_connection function to update the database with "COMPLETED" OP_STATUS and OP_ENDTIME
+			sm.db_connection(runner = sys.argv[4], OP_NAME = sys.argv[5], OP_STATUS = "COMPLETED", OP_STARTTIME=OP_STARTTIME, OP_ENDTIME=OP_ENDTIME)
+
+		#checking for errors in the aws_create_user function 
+		elif OP_STATUS == "ERROR":
+			timestring3 = datetime.datetime.now()
+			ENDTIME3 = timestring3.strftime("%d-%b-%y %I.%M.%S.%f %p")
+			OP_ENDTIME = ENDTIME3.upper()
+			print("End Time: {}".format(OP_ENDTIME))
+
+			#calling the db_connection function to update the database with "ERROR" OP_STATUS and OP_ENDTIME
+			sm.db_connection(runner = sys.argv[4], OP_NAME = sys.argv[5], OP_STATUS = "ERROR", OP_STARTTIME=OP_STARTTIME, OP_ENDTIME=OP_ENDTIME)
 
 
-	elif sys.argv[1] == "create_aws_user" and count_args != 3:
+	elif sys.argv[1] == "create_aws_user" and count_args != 6:
 		print("You have provided the wrong number of command line arguments.")
 		print("Please run this script in the format below:")
-		print("python *scriptname* *operation* *service* *aws_user*")
+		print("python *scriptname* *operation* *service* *aws_user* *runner* *OP_NAME* *OP_STATUS*")
 
 
-	elif sys.argv[1] == "create_aws_group" and count_args == 3:
+	elif sys.argv[1] == "create_aws_group" and count_args == 6:
 		service = sys.argv[2]
 		group_name = sys.argv[3]
+		runner = sys.argv[4]
+		OP_NAME = sys.argv[5]
+		OP_STATUS = sys.argv[6]
 
-		sm.aws_create_group(service = sys.argv[2], group_name = sys.argv[3])
+		#declaring the initial operation starttime
+		timestring = datetime.datetime.now()
+		STARTTIME = timestring.strftime("%d-%b-%y %I.%M.%S.%f %p")
+		OP_STARTTIME = STARTTIME.upper()
+		print("Start Time: {}".format(OP_STARTTIME))
+
+		#calling the db_connection function to input start-time, runner, op_name and status into database
+		sm.db_connection(runner = sys.argv[4], OP_NAME = sys.argv[5], OP_STATUS = sys.argv[6], OP_STARTTIME=OP_STARTTIME)
+
+		#calling the AWS create-group function
+		OP_STATUS = sm.aws_create_group(service = sys.argv[2], group_name = sys.argv[3])
+
+		#checking the condition of the return value from create_aws_user function to determine OP_STATUS and OPENDTIME for DB update
+		if OP_STATUS == "COMPLETED":
+			timestring3 = datetime.datetime.now()
+			ENDTIME3 = timestring3.strftime("%d-%b-%y %I.%M.%S.%f %p")
+			OP_ENDTIME = ENDTIME3.upper()
+			print("End Time: {}".format(OP_ENDTIME))
+
+			#calling the db_connection function to update the database with "COMPLETED" OP_STATUS and OP_ENDTIME
+			sm.db_connection(runner = sys.argv[4], OP_NAME = sys.argv[5], OP_STATUS = "COMPLETED", OP_STARTTIME=OP_STARTTIME, OP_ENDTIME=OP_ENDTIME)
+
+		elif OP_STATUS == "ERROR":
+			timestring3 = datetime.datetime.now()
+			ENDTIME3 = timestring3.strftime("%d-%b-%y %I.%M.%S.%f %p")
+			OP_ENDTIME = ENDTIME3.upper()
+			print("End Time: {}".format(OP_ENDTIME))
+
+			#calling the db_connection function to update the database with "ERROR" OP_STATUS and OP_ENDTIME
+			sm.db_connection(runner = sys.argv[4], OP_NAME = sys.argv[5], OP_STATUS = "ERROR", OP_STARTTIME=OP_STARTTIME, OP_ENDTIME=OP_ENDTIME)
 
 
-	elif sys.argv[1] == "create_aws_group" and count_args != 3:
+	elif sys.argv[1] == "create_aws_group" and count_args != 6:
 		print("You have provided the wrong number of command line arguments.")
 		print("Please run this script in the format below:")
-		print("python *scriptname* *operation* *service* *group name*")
+		print("python *scriptname* *operation* *service* *group name* *runner* *OP_NAME* *OP_STATUS*")
 
 
-	elif sys.argv[1] == "add_user_to_group" and count_args == 4:
+	elif sys.argv[1] == "add_user_to_group" and count_args == 7:
 		service = sys.argv[2]
 		user_name = sys.argv[3]
 		group_name = sys.argv[4]
-		
-		sm.add_user_to_group(service = sys.argv[2], user_name = sys.argv[3], group_name = sys.argv[4])
+		runner = sys.argv[5]
+		OP_NAME = sys.argv[6]
+		OP_STATUS = sys.argv[7]
 
-	
-	elif sys.argv[1] == "add_user_to_group" and count_args != 4:
+		#declaring the initial operation starttime
+		timestring = datetime.datetime.now()
+		STARTTIME = timestring.strftime("%d-%b-%y %I.%M.%S.%f %p")
+		OP_STARTTIME = STARTTIME.upper()
+		print("Start Time: {}".format(OP_STARTTIME))
+
+		#calling the db_connection function to input start-time, runner, op_name and status into database
+		sm.db_connection(runner = sys.argv[5], OP_NAME = sys.argv[6], OP_STATUS = sys.argv[7], OP_STARTTIME=OP_STARTTIME)
+
+		#calling the AWS create-group function
+		OP_STATUS = sm.add_user_to_group(service = sys.argv[2], user_name = sys.argv[3], group_name = sys.argv[4])
+
+		#checking the condition of the return value from create_aws_user function to determine OP_STATUS and OPENDTIME for DB update
+		if OP_STATUS == "COMPLETED":
+			timestring3 = datetime.datetime.now()
+			ENDTIME3 = timestring3.strftime("%d-%b-%y %I.%M.%S.%f %p")
+			OP_ENDTIME = ENDTIME3.upper()
+			print("End Time: {}".format(OP_ENDTIME))
+
+			#calling the db_connection function to update the database with "COMPLETED" OP_STATUS and OP_ENDTIME
+			sm.db_connection(runner = sys.argv[5], OP_NAME = sys.argv[6], OP_STATUS = "COMPLETED", OP_STARTTIME=OP_STARTTIME, OP_ENDTIME=OP_ENDTIME)
+
+		elif OP_STATUS == "ERROR":
+			timestring3 = datetime.datetime.now()
+			ENDTIME3 = timestring3.strftime("%d-%b-%y %I.%M.%S.%f %p")
+			OP_ENDTIME = ENDTIME3.upper()
+			print("End Time: {}".format(OP_ENDTIME))
+
+			#calling the db_connection function to update the database with "ERROR" OP_STATUS and OP_ENDTIME
+			sm.db_connection(runner = sys.argv[5], OP_NAME = sys.argv[6], OP_STATUS = "ERROR", OP_STARTTIME=OP_STARTTIME, OP_ENDTIME=OP_ENDTIME)
+
+
+	elif sys.argv[1] == "add_user_to_group" and count_args != 7:
 		print("You have provided the wrong number of command line arguments.")
 		print("Please run this script in the format below:")
-		print("python *scriptname* *operation* *service* *user_name* *group name*")
-
+		print("python *scriptname* *operation* *service* *user_name* *group name* *runner* *OP_NAME* *OP_STATUS*")
+		
 
 	else:
 		print("Please select operation to perform: 'backup', 'database_backup', 'disk_utilization', 'database_import', 'database_migration', 'create_aws_user', 'create_aws_group' or 'add_user_to_group'")
+
 
 
 

@@ -89,6 +89,16 @@ def db_connection(**db_conn):
 							where OP_STARTTIME = :OP_STARTTIME_INS""",
 							OP_STARTTIME_INS = db_conn["OP_STARTTIME"]
 							)
+			
+			select_result = cursor.fetchall()
+			for each in select_result:
+				OP_ID = each[0]
+				OP_NAME = each[1]
+				OP_TYPE = each[2]
+				OP_STARTTIME = each[3]
+				OP_ENDTIME = each[4]
+				MON_EMAIL = each[5]
+				print("OP_ID: {}\nOP_NAME: {}\nOP_TYPE: {}\nOP_STARTTIME: {}\nOP_ENDTIME: {}\nMON_EMAIL: {}".format(OP_ID, OP_NAME, OP_TYPE, OP_STARTTIME, OP_ENDTIME, MON_EMAIL))
 
 			connection.commit()
 			cursor.close()
@@ -551,6 +561,8 @@ def aws_create_user(**args):
 		# iam = boto3.client("iam")
 		response = iam_client.create_user(UserName = args["user"])
 		print(response)
+		status1 = "COMPLETED"
+		return status1
 
 	except ClientError as error:
 		print(error.response)
@@ -560,14 +572,20 @@ def aws_create_user(**args):
 			if val == "y":
 				print("You want to use the same user")
 				pass
+				status1 = "ERROR"
+				return status1
 			else:
 				print("You want to create a new user")
 				new_user = input("Enter User Name: ")
 				response = iam_client.create_user(UserName = new_user)
 				print(response)
+				status1 = "ERROR"
+				return status1
 		else:
 			print("Unexpected error occured while creating user... exiting from here", error)
-			return "User could not be created", error
+			#return "User could not be created", error
+			status1 = "ERROR"
+			return status1
 		
 
 def aws_create_group(**args):
@@ -582,6 +600,9 @@ def aws_create_group(**args):
 		)
 		print(response1)
 
+		status1 = "COMPLETED"
+		return status1
+
 	except ClientError as error:
 		print(error.response)
 		if error.response["Error"]["Code"] == "EntityAlreadyExists":
@@ -590,6 +611,7 @@ def aws_create_group(**args):
 			if value1 == "y":
 				print("You want to use the same group name")
 				pass
+
 			else:
 				print("You want to create a new group")
 				new_group = input("Enter Group Name: ")
@@ -601,10 +623,16 @@ def aws_create_group(**args):
 				PolicyArn = "arn:aws:iam::aws:policy/AdministratorAccess"
 				)
 				print(response1)
+
+				status1 = "COMPLETED"
+				return status1
 		else:
 			print("Unexpected error occured while creating group... exiting from here", error)
-			return "Group could not be created", error
-		
+			#return "Group could not be created", error
+
+			status1 = "ERROR"
+			return status1
+				
 
 def add_user_to_group(**args):
 	try:
@@ -615,12 +643,23 @@ def add_user_to_group(**args):
 		)
 		print(response)
 
-		response1 = iam_client.create_login_profile(
-			UserName = args["user_name"],
-			Password = "Stackinc987",
-			PasswordResetRequired=False
-		)
-		print(response1)
+		try:
+			response1 = iam_client.create_login_profile(
+				UserName = args["user_name"],
+				Password = "Stackinc987",
+				PasswordResetRequired=False
+			)
+			print(response1)
+
+		except ClientError as error:
+			print(error.response)
+
+			if error.response["Error"]["Code"] == "EntityAlreadyExists":
+				status1 = "COMPLETED"
+				return status1
+
+		status1 = "COMPLETED"
+		return status1
 
 	except ClientError as error:
 		print(error.response)
@@ -652,6 +691,9 @@ def add_user_to_group(**args):
 					)
 					print(response)
 
+					status1 = "COMPLETED"
+					return status1
+
 				except ClientError as error:
 					print(error.response)
 
@@ -680,6 +722,11 @@ def add_user_to_group(**args):
 							)
 							print(response1)
 
+							status1 = "COMPLETED"
+							return status1
+						else:
+							print("Group does not exist and you chose not to create a new group.")
+
 			else:
 				print("You choose not to create a new user and user provided does not exist.")
 
@@ -701,14 +748,20 @@ def add_user_to_group(**args):
 				print(response)
 
 				response1 = iam_client.attach_group_policy(
-					GroupName = args["group_name"],
+					GroupName = new_group,
 					PolicyArn = "arn:aws:iam::aws:policy/AdministratorAccess"
 				)
 				print(response1)
 
+				status1 = "COMPLETED"
+				return status1
+
 		else:
 			print("Unexpected error... exiting from here", error)
-			return "User or Group could not be created", error
+			#return "User or Group could not be created", error
+		
+			status1 = "ERROR"
+			return status1
 
 
 #Main body
