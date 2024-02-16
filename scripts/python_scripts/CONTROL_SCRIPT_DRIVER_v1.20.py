@@ -113,6 +113,7 @@ if __name__ == "__main__":
 		print("Please run this script in the format below:")
 		print("python *scriptname* *function* *runner* *backup location* *schema to be backed up*")
 
+
 	elif sys.argv[1] == "backup" and count_args == 3:
 		source = sys.argv[2]
 		dest = sys.argv[3]
@@ -120,10 +121,12 @@ if __name__ == "__main__":
 		#calling the copy function from the stack_modules_v1_3 module
 		sm.copy_fd(source, dest)
 
+
 	elif sys.argv[1] == "backup" and count_args != 3:
 		print("You have provided the wrong number of command line arguments.")
 		print("Please run this script in the format below:")
 		print("python *scriptname* *function* *source directory* *source file* *destination*")
+
 
 	elif sys.argv[1] == "disk_utilization" and count_args == 7:
 		disk = sys.argv[2]
@@ -331,6 +334,12 @@ if __name__ == "__main__":
 			sm.db_connection(runner = sys.argv[4], OP_NAME = sys.argv[5], OP_STATUS = "ERROR", OP_STARTTIME=OP_STARTTIME, OP_ENDTIME=OP_ENDTIME)
 
 
+	elif sys.argv[1] == "create_aws_user" and count_args != 6:
+		print("You have provided the wrong number of command line arguments.")
+		print("Please run this script in the format below:")
+		print("python *scriptname* *operation* *service* *aws_user* *runner* *OP_NAME* *OP_STATUS*")
+
+
 	elif sys.argv[1] == "create_aws_group" and count_args == 6:
 		service = sys.argv[2]
 		group_name = sys.argv[3]
@@ -368,6 +377,12 @@ if __name__ == "__main__":
 
 			#calling the db_connection function to update the database with "ERROR" OP_STATUS and OP_ENDTIME
 			sm.db_connection(runner = sys.argv[4], OP_NAME = sys.argv[5], OP_STATUS = "ERROR", OP_STARTTIME=OP_STARTTIME, OP_ENDTIME=OP_ENDTIME)
+
+
+	elif sys.argv[1] == "create_aws_group" and count_args != 6:
+		print("You have provided the wrong number of command line arguments.")
+		print("Please run this script in the format below:")
+		print("python *scriptname* *operation* *service* *group name* *runner* *OP_NAME* *OP_STATUS*")
 
 
 	elif sys.argv[1] == "add_user_to_group" and count_args == 7:
@@ -409,8 +424,15 @@ if __name__ == "__main__":
 			#calling the db_connection function to update the database with "ERROR" OP_STATUS and OP_ENDTIME
 			sm.db_connection(runner = sys.argv[5], OP_NAME = sys.argv[6], OP_STATUS = "ERROR", OP_STARTTIME=OP_STARTTIME, OP_ENDTIME=OP_ENDTIME)
 
+
+	elif sys.argv[1] == "add_user_to_group" and count_args != 7:
+		print("You have provided the wrong number of command line arguments.")
+		print("Please run this script in the format below:")
+		print("python *scriptname* *operation* *service* *user_name* *group name* *runner* *OP_NAME* *OP_STATUS*")
+		
+
 	else:
-		print("Please select operation to perform: 'backup', 'database_backup', 'disk_utilization', 'database_import' or 'database_migration' ")
+		print("Please select operation to perform: 'backup', 'database_backup', 'disk_utilization', 'database_import', 'database_migration', 'create_aws_user', 'create_aws_group' or 'add_user_to_group'")
 
 
 

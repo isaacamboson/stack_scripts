@@ -298,11 +298,23 @@ if __name__ == "__main__":
 		sm.aws_create_user(service = sys.argv[2], user = sys.argv[3])
 
 
+	elif sys.argv[1] == "create_aws_user" and count_args != 3:
+		print("You have provided the wrong number of command line arguments.")
+		print("Please run this script in the format below:")
+		print("python *scriptname* *operation* *service* *aws_user*")
+
+
 	elif sys.argv[1] == "create_aws_group" and count_args == 3:
 		service = sys.argv[2]
 		group_name = sys.argv[3]
 
 		sm.aws_create_group(service = sys.argv[2], group_name = sys.argv[3])
+
+
+	elif sys.argv[1] == "create_aws_group" and count_args != 3:
+		print("You have provided the wrong number of command line arguments.")
+		print("Please run this script in the format below:")
+		print("python *scriptname* *operation* *service* *group name*")
 
 
 	elif sys.argv[1] == "add_user_to_group" and count_args == 4:
@@ -312,9 +324,15 @@ if __name__ == "__main__":
 		
 		sm.add_user_to_group(service = sys.argv[2], user_name = sys.argv[3], group_name = sys.argv[4])
 
+	
+	elif sys.argv[1] == "add_user_to_group" and count_args != 4:
+		print("You have provided the wrong number of command line arguments.")
+		print("Please run this script in the format below:")
+		print("python *scriptname* *operation* *service* *user_name* *group name*")
+
 
 	else:
-		print("Please select operation to perform: 'backup' or 'database_backup'")
+		print("Please select operation to perform: 'backup', 'database_backup', 'disk_utilization', 'database_import', 'database_migration', 'create_aws_user', 'create_aws_group' or 'add_user_to_group'")
 
 
 
