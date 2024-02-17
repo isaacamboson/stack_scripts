@@ -483,7 +483,7 @@ if __name__ == "__main__":
 				sm.add_user_to_group(service = sys.argv[2], group_name = sys.argv[3], user_name = db_user)
 
 
-			#loggind endtime of operation into the database
+			#logging endtime of operation into the database
 			OP_STATUS = "COMPLETED"
 			if OP_STATUS == "COMPLETED":
 				timestring3 = datetime.datetime.now()
