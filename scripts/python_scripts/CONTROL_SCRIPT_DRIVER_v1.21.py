@@ -515,7 +515,7 @@ if __name__ == "__main__":
 		print("Please run this script in the format below:")
 		print("python *scriptname* *operation* *service* *group name* *runner* *OP_NAME* *OP_STATUS*")
 
-		#rainy day scenario for when operation is wrongly selected. Please select right operation and provide correct command line arguments
+	#rainy day scenario for when operation is wrongly selected. Please select right operation and provide correct command line arguments
 	else:
 		print("Please select operation to perform: 'backup', 'database_backup', 'disk_utilization', 'database_import', 'database_migration', 'create_aws_user', 'create_aws_group' or 'add_user_to_group'")
 
