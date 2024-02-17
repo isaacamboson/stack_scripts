@@ -453,21 +453,24 @@ if __name__ == "__main__":
 		#calling the db_connection function to input start-time, runner, op_name and status into database
 		sm.db_connection(runner = sys.argv[4], OP_NAME = sys.argv[5], OP_STATUS = sys.argv[6], OP_STARTTIME=OP_STARTTIME)
 
-		#calling the AWS create-group function
+		#calling the AWS create-group function and adding Admin policy
 		sm.aws_create_group(service = sys.argv[2], group_name = sys.argv[3])
 
 		#calling the db_connection function to input start-time, runner, op_name and status into database
 		connection = cx_Oracle.connect(user="STACK_ISA_SEP23", password="stackinc", dsn="MKIT-DEV-OEM/APEXDB")
 		print(connection.version)
 
+		#establishing connection to the database to pull database users, to be used to create users in AWS
 		cursor = connection.cursor()
 		cursor.execute("""select username from all_users where username like '%SEP23'""")
 		db_usernames = cursor.fetchall()
 
+		#closing database connection(s)
 		connection.commit()
 		cursor.close()
 		connection.close()
 
+		#looping through the list of users pulled from database to create each AWS user and add AWS user to AWS group
 		try:
 			for each_username in db_usernames:
 				db_user = each_username[0]
@@ -479,6 +482,8 @@ if __name__ == "__main__":
 				#calling the AWS create-group function
 				sm.add_user_to_group(service = sys.argv[2], group_name = sys.argv[3], user_name = db_user)
 
+
+			#loggind endtime of operation into the database
 			OP_STATUS = "COMPLETED"
 			if OP_STATUS == "COMPLETED":
 				timestring3 = datetime.datetime.now()
@@ -489,6 +494,8 @@ if __name__ == "__main__":
 				#calling the db_connection function to update the database with "COMPLETED" OP_STATUS and OP_ENDTIME
 				sm.db_connection(runner = sys.argv[4], OP_NAME = sys.argv[5], OP_STATUS = "COMPLETED", OP_STARTTIME=OP_STARTTIME, OP_ENDTIME=OP_ENDTIME)
 
+
+		#checking for errors and logging endtime of operation into database when an error occurs as well
 		except Exception as e:
 			print("ERROR! {}".format(e))
 			OP_STATUS = "ERROR"
@@ -502,12 +509,13 @@ if __name__ == "__main__":
 				sm.db_connection(runner = sys.argv[4], OP_NAME = sys.argv[5], OP_STATUS = "ERROR", OP_STARTTIME=OP_STARTTIME, OP_ENDTIME=OP_ENDTIME)
 
 
+	#rainy day scenario for when operation is correct - "aws_migrate_users", but the # of command line arguments is outside of required - 6
 	elif sys.argv[1] == "aws_migrate_users" and count_args != 6:
 		print("You have provided the wrong number of command line arguments.")
 		print("Please run this script in the format below:")
 		print("python *scriptname* *operation* *service* *group name* *runner* *OP_NAME* *OP_STATUS*")
 
-		
+	#rainy day scenario for when operation is wrongly selected. Please select right operation and provide correct command line arguments
 	else:
 		print("Please select operation to perform: 'backup', 'database_backup', 'disk_utilization', 'database_import', 'database_migration', 'create_aws_user', 'create_aws_group' or 'add_user_to_group'")
 
