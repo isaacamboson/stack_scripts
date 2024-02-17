@@ -13,7 +13,6 @@ import cx_Oracle
 import datetime
 import boto3, botocore
 from botocore.exceptions import ClientError
-import creds as c
 
 
 timestring = time.localtime()
@@ -548,10 +547,7 @@ def disk_maintenance_check_on_prem(**disk_util):
 
 def aws_create_user(**args):
 	try:
-		iam_client = boto3.client(args["service"], 
-							aws_access_key_id=c.aws_access_key_id, 
-							aws_secret_access_key=c.aws_secret_access_key
-							)
+		iam_client = boto3.client(args["service"])
 		# iam = boto3.client("iam")
 		response = iam_client.create_user(UserName = args["user"])
 		print(response)
@@ -576,10 +572,7 @@ def aws_create_user(**args):
 
 def aws_create_group(**args):
 	try:
-		iam_client = boto3.client(args["service"],
-							aws_access_key_id=c.aws_access_key_id, 
-							aws_secret_access_key=c.aws_secret_access_key
-							)
+		iam_client = boto3.client(args["service"])
 		response = iam_client.create_group(GroupName=args["group_name"])
 		print(response)
 
