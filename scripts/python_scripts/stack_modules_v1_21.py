@@ -28,7 +28,7 @@ def db_connection(**db_conn):
 
 			OP_STATUS = "RUNNING"
 			
-			connection = cx_Oracle.connect(user="STACK_ISA_SEP23", password="stackinc", dsn="MKIT-DEV-OEM/APEXDB")
+			connection = cx_Oracle.connect(user=c.apexdbdb_user, password=c.apexdbdb_password, dsn=c.db_name)
 			print(connection.version)
 
 			cursor = connection.cursor()
@@ -47,7 +47,7 @@ def db_connection(**db_conn):
 
 		elif db_conn["OP_STATUS"] == "COMPLETED":
 
-			connection = cx_Oracle.connect(user="STACK_ISA_SEP23", password="stackinc", dsn="MKIT-DEV-OEM/APEXDB")
+			connection = cx_Oracle.connect(user=c.apexdbdb_user, password=c.apexdbdb_password, dsn=c.db_name)
 			print(connection.version)
 
 			cursor = connection.cursor()
@@ -77,7 +77,7 @@ def db_connection(**db_conn):
 
 		elif db_conn["OP_STATUS"] == "ERROR":
 
-			connection = cx_Oracle.connect(user="STACK_ISA_SEP23", password="stackinc", dsn="MKIT-DEV-OEM/APEXDB")
+			connection = cx_Oracle.connect(user=c.apexdbdb_user, password=c.apexdbdb_password, dsn=c.db_name)
 			print(connection.version)
 
 			cursor = connection.cursor()
