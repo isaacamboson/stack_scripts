@@ -9,6 +9,7 @@ import datetime
 import cx_Oracle
 import boto3, botocore
 from botocore.exceptions import ClientError
+import creds as c
 
 if __name__ == "__main__":
 
@@ -457,7 +458,7 @@ if __name__ == "__main__":
 		sm.aws_create_group(service = sys.argv[2], group_name = sys.argv[3])
 
 		#calling the db_connection function to input start-time, runner, op_name and status into database
-		connection = cx_Oracle.connect(user="STACK_ISA_SEP23", password="stackinc", dsn="MKIT-DEV-OEM/APEXDB")
+		connection = cx_Oracle.connect(user=c.apexdbdb_user, password=c.apexdbdb_password, dsn=c.db_name)
 		print(connection.version)
 
 		#establishing connection to the database to pull database users, to be used to create users in AWS
