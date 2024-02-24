@@ -457,11 +457,10 @@ if __name__ == "__main__":
 		#calling the AWS create-group function and adding Admin policy
 		sm.aws_create_group(service = sys.argv[2], group_name = sys.argv[3])
 
-		#calling the db_connection function to input start-time, runner, op_name and status into database
+		#calling the db_connection function to pull database users, to be used to create users in AWS
 		connection = cx_Oracle.connect(user=c.apexdbdb_user, password=c.apexdbdb_password, dsn=c.db_name)
 		print(connection.version)
 
-		#establishing connection to the database to pull database users, to be used to create users in AWS
 		cursor = connection.cursor()
 		cursor.execute("""select username from all_users where username like '%SEP23'""")
 		db_usernames = cursor.fetchall()
@@ -471,7 +470,7 @@ if __name__ == "__main__":
 		cursor.close()
 		connection.close()
 
-		#looping through the list of users pulled from database to create each AWS user and add AWS user to AWS group
+		#looping through the list of users pulled from database to create each AWS user and add AWS user to previously created AWS group
 		try:
 			for each_username in db_usernames:
 				db_user = each_username[0]
