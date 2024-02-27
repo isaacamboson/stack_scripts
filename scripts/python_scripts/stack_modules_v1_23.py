@@ -896,6 +896,7 @@ def aws_s3_delete_bucket(**args):
             RoleSessionName = "Engineer@Dev"
             )
                 
+		#assigning temporary credentials used for assuming role
         temp_credentials = assume_role_response["Credentials"]
         s3_client = boto3.client(args["service"],
                             aws_access_key_id = temp_credentials["AccessKeyId"],
@@ -904,6 +905,7 @@ def aws_s3_delete_bucket(**args):
                             )
         delete_bucket_response = s3_client.delete_bucket(Bucket = args["bucket_name"])
                     
+		#checking the status code in response to see if deletion was successful
         if delete_bucket_response["ResponseMetadata"]["HTTPStatusCode"] == 204:
             print("S3 bucket '{}' has been deleted".format(args["bucket_name"]))
 
