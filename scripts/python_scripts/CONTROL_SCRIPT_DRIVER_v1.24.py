@@ -572,8 +572,7 @@ if __name__ == "__main__":
 		service = sys.argv[3]
 		upload_files = sys.argv[4]
 		bucket_name = sys.argv[5]
-		# key = sys.argv[6]
-
+		
 		upload_files = upload_files.split()
 		print(upload_files)
 
@@ -591,5 +590,3 @@ if __name__ == "__main__":
 		print("Please select operation to perform: 'backup', 'database_backup', 'disk_utilization', 'database_import', 'database_migration', 'create_aws_user', 'create_aws_group' or 'add_user_to_group'")
 
 
-
-#, key = sys.argv[6]
