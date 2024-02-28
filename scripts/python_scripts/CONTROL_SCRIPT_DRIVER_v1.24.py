@@ -539,6 +539,7 @@ if __name__ == "__main__":
 		sm.aws_remove_user_from_group(service = sys.argv[2], aws_user = sys.argv[3], group_name = sys.argv[4])
 
 
+	#calling the aws s3 create bucket function
 	elif sys.argv[1] == "aws_s3_create_bucket" and count_args == 4:
 		role_service = sys.argv[2]
 		service = sys.argv[3]
@@ -547,12 +548,14 @@ if __name__ == "__main__":
 		sm.aws_s3_create_bucket(role_service = sys.argv[2], service = sys.argv[3], bucket_name = sys.argv[4])
 
 
+	#rainy day scenario for calling the aws s3 create bucket function
 	elif sys.argv[1] == "aws_s3_create_bucket" and count_args != 4:
 		print("You have provided the wrong number of command line arguments.")
 		print("Please run this script in the format below:")
 		print("python *scriptname* *role service* *service* *bucket name*")
 
 
+	#calling the aws s3 delete bucket function
 	elif sys.argv[1] == "aws_s3_delete_bucket" and count_args == 4:
 		role_service = sys.argv[2]
 		service = sys.argv[3]
@@ -561,12 +564,14 @@ if __name__ == "__main__":
 		sm.aws_s3_delete_bucket(role_service = sys.argv[2], service = sys.argv[3], bucket_name = sys.argv[4])
 
 
+	#rainy day scenario for calling the aws s3 delete bucket function
 	elif sys.argv[1] == "aws_s3_delete_bucket" and count_args != 4:
 		print("You have provided the wrong number of command line arguments.")
 		print("Please run this script in the format below:")
 		print("python *scriptname* *role service* *service* *bucket name*")
 
 
+	#calling the aws s3 upload to bucket function
 	elif sys.argv[1] == "aws_s3_upload_content" and count_args == 5:
 		role_service = sys.argv[2]
 		service = sys.argv[3]
@@ -579,6 +584,7 @@ if __name__ == "__main__":
 		sm.aws_s3_upload_content(upload_files = upload_files, role_service = sys.argv[2], service = sys.argv[3], bucket_name = sys.argv[5])
 
 
+	#rainy day scenario for calling the aws s3 upload to bucket function
 	elif sys.argv[1] == "aws_s3_upload_content" and count_args != 5:
 		print("You have provided the wrong number of command line arguments.")
 		print("Please run this script in the format below:")

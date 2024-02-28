@@ -913,29 +913,33 @@ def aws_s3_delete_bucket(**args):
 
 #creating an AWS function that uploads files to an S3 bucket
 def aws_s3_upload_content(**args):
-    try:
-        #creating an sts client for assuming roles
-        sts_client = boto3.client(args["role_service"], 
+
+	try:
+		#creating an sts client for assuming roles
+		sts_client = boto3.client(args["role_service"], 
                             aws_access_key_id=c.aws_access_key_id,
                             aws_secret_access_key=c.aws_secret_access_key)
-
-        assume_role_response = sts_client.assume_role(
+		
+		assume_role_response = sts_client.assume_role(
             RoleArn = "arn:aws:iam::767398027423:role/Engineer",
             RoleSessionName = "Engineer@Dev"
             )
         
-        temp_credentials = assume_role_response["Credentials"]
-        s3_client = boto3.client(args["service"],
+		#using the temporary credentials for our assumed role for assume the Dev_Engineer role
+		temp_credentials = assume_role_response["Credentials"]
+		s3_client = boto3.client(args["service"],
                             aws_access_key_id = temp_credentials["AccessKeyId"],
                             aws_secret_access_key = temp_credentials["SecretAccessKey"],
                             aws_session_token = temp_credentials["SessionToken"]
                             )
         
-        upload_response = s3_client.upload_file(args["upload_file"], args["bucket_name"], args["key"])
-        print("'{}' has been uploaded to the s3 bucket - '{}'".format(args["upload_file"], args["bucket_name"]))
+		#iterating through the upload files list to upload each file
+		for each_file in args["upload_files"]:
+			upload_response = s3_client.upload_file(each_file, args["bucket_name"], Key = each_file)
+			print("'{}' has been uploaded to the s3 bucket - '{}'".format(each_file, args["bucket_name"]))
 
-    except ClientError as error:
-        print(error.response)
+	except ClientError as error:
+		print(error.response)		
 
 
 #creating the empty s3 bucket function

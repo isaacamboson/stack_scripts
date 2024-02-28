@@ -919,6 +919,7 @@ def aws_s3_upload_content(**args):
 		sts_client = boto3.client(args["role_service"], 
                             aws_access_key_id=c.aws_access_key_id,
                             aws_secret_access_key=c.aws_secret_access_key)
+		
 		assume_role_response = sts_client.assume_role(
             RoleArn = "arn:aws:iam::767398027423:role/Engineer",
             RoleSessionName = "Engineer@Dev"

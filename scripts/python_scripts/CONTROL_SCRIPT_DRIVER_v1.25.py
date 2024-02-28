@@ -575,11 +575,13 @@ if __name__ == "__main__":
 	elif sys.argv[1] == "aws_s3_upload_content" and count_args == 6:
 		role_service = sys.argv[2]
 		service = sys.argv[3]
-		upload_file = sys.argv[4]
+		upload_files = sys.argv[4]
 		bucket_name = sys.argv[5]
-		key = sys.argv[6]
 
-		sm.aws_s3_upload_content(role_service = sys.argv[2], service = sys.argv[3], upload_file = sys.argv[4], bucket_name = sys.argv[5], key = sys.argv[6])
+		upload_files = upload_files.split()
+		print(upload_files)
+		
+		sm.aws_s3_upload_content(upload_files = upload_files, role_service = sys.argv[2], service = sys.argv[3], bucket_name = sys.argv[5])
 
 
 	#rainy day scenario for calling the aws s3 upload to bucket function
