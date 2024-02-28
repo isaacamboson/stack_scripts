@@ -567,17 +567,19 @@ if __name__ == "__main__":
 		print("python *scriptname* *role service* *service* *bucket name*")
 
 
-	elif sys.argv[1] == "aws_s3_upload_content" and count_args == 6:
+	elif sys.argv[1] == "aws_s3_upload_content" and count_args == 5:
 		role_service = sys.argv[2]
 		service = sys.argv[3]
-		upload_file = sys.argv[4]
+		upload_files = sys.argv[4]
 		bucket_name = sys.argv[5]
-		key = sys.argv[6]
+		
+		upload_files = upload_files.split()
+		print(upload_files)
 
-		sm.aws_s3_upload_content(role_service = sys.argv[2], service = sys.argv[3], upload_file = sys.argv[4], bucket_name = sys.argv[5], key = sys.argv[6])
+		sm.aws_s3_upload_content(upload_files = upload_files, role_service = sys.argv[2], service = sys.argv[3], bucket_name = sys.argv[5])
 
 
-	elif sys.argv[1] == "aws_s3_upload_content" and count_args != 6:
+	elif sys.argv[1] == "aws_s3_upload_content" and count_args != 5:
 		print("You have provided the wrong number of command line arguments.")
 		print("Please run this script in the format below:")
 		print("python *scriptname* *role service* *service* *upload file* *bucket name* *key*")
@@ -586,7 +588,5 @@ if __name__ == "__main__":
 	#rainy day scenario for when operation is wrongly selected. Please select right operation and provide correct command line arguments
 	else:
 		print("Please select operation to perform: 'backup', 'database_backup', 'disk_utilization', 'database_import', 'database_migration', 'create_aws_user', 'create_aws_group' or 'add_user_to_group'")
-
-
 
 
