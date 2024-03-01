@@ -1181,6 +1181,91 @@ def aws_s3_enable_server_access_logging(**args):
         print(error.response)
 
 
+#creating a function that enables object level logging
+def aws_s3_enable_obj_level_logging(**args):
+
+    try:
+        #creating an sts client for assuming roles
+        sts_client = boto3.client(args["role_service"], 
+                            aws_access_key_id=c.aws_access_key_id,
+                            aws_secret_access_key=c.aws_secret_access_key)
+
+        assume_role_response = sts_client.assume_role(
+            RoleArn = "arn:aws:iam::767398027423:role/Engineer",
+            RoleSessionName = "Engineer@Dev"
+            )
+                
+        #using the temporary credentials for our assumed role for assume the Dev_Engineer role
+        temp_credentials = assume_role_response["Credentials"]
+        ct_client = boto3.client(args["ct_service"],
+                            aws_access_key_id = temp_credentials["AccessKeyId"],
+                            aws_secret_access_key = temp_credentials["SecretAccessKey"],
+                            aws_session_token = temp_credentials["SessionToken"],
+                            region_name = "us-east-1"
+                            )
+        
+        s3_client = boto3.client(args["s3_service"],
+                            aws_access_key_id = temp_credentials["AccessKeyId"],
+                            aws_secret_access_key = temp_credentials["SecretAccessKey"],
+                            aws_session_token = temp_credentials["SessionToken"]
+                            )
+        
+        #updating bucket policy for source bucket to grant permissions for cloud trail, using a bucket policy
+        with open("cloud_trail.json") as ct_policy:
+            ct_policy_content = ct_policy.read()
+            # print(ct_policy_content)
+
+        ct_policy_response = s3_client.put_bucket_policy(
+            Bucket = args["bucket_name"],
+            Policy = ct_policy_content
+            )
+
+        # print(ct_policy_response)
+        
+        #creating the cloud trail
+        create_trail_response = ct_client.create_trail(
+            Name = args["trail_name"],
+            S3BucketName = args["bucket_name"],
+            S3KeyPrefix = args["trail_prefix"],
+            IncludeGlobalServiceEvents = True,
+            IsOrganizationTrail = False,
+            EnableLogFileValidation = False,
+            IsMultiRegionTrail = True
+        )
+        print(create_trail_response)
+
+        #put event selectors
+        put_event_selectors_response = ct_client.put_event_selectors(
+            TrailName = args["trail_name"],
+            EventSelectors = [
+                {
+                    "ReadWriteType": "All",
+                    "IncludeManagementEvents": True,
+                    "DataResources": [
+                        {
+                            "Type": "AWS::S3::Object",
+                            "Values": [
+                                "arn:aws:s3:::stackbuckisaacsep23/arithmetic.sh"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        )
+
+        print(put_event_selectors_response)
+
+        #get event selectors
+        get_event_selectors_response = ct_client.get_event_selectors(
+            TrailName = args["trail_name"]
+        )
+
+        print(get_event_selectors_response)
+
+    except ClientError as error:
+        print(error.response)
+
+
 
 #Main body
 if __name__ == "__main__":
