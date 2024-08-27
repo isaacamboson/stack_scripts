@@ -88,7 +88,7 @@ database_backup()
 	then
 		
    	#creating logfile containing schema log in details
-   	sqlplus stack_temp/stackinc@APEXDB<<EOF
+   	sqlplus user_name/password@APEXDB<<EOF
    	set echo on feedback on
    	spool /home/oracle/scripts/practicedir_isa_sep23/db_status.log
    	show user
@@ -269,7 +269,7 @@ if [[ $# == 0 ]]
 then
 	#checking whether to run backup, disk utilization check, DB backup or SCP
 	echo "You have entered $# command line argument(s)."
-	read -p "Please select 'backup', 'disk_util_check', 'database_migration', 'secure_copy': " ENTERED1
+	read -p "Please select 'backup', 'disk_util_check', 'database_backup', 'database_migration', 'secure_copy': " ENTERED1
 
 	#case statements for 0 command line args 	
 	case ${ENTERED1} in
